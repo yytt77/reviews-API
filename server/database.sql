@@ -14,11 +14,13 @@ CREATE TABLE IF NOT EXISTS review(
   rating INT(10) NOT NULL,
   summary VARCHAR(60) NOT NULL,
   recommend BOOLEAN NOT NULL,
-  response VARCHAR(100) NOT NULL,
+  response VARCHAR(100) DEFAULT NULL,
   body VARCHAR(1000) NOT NULL,
   date DATETIME,
   reviewer_name VARCHAR(30) NOT NULL,
+  reviewer_email VARCHAR(50) NOT NULL,
   helpfulness TINYINT(4) NOT NULL,
+  FOREIGN KEY (id) REFERENCES photos (id)
 );
 
 CREATE TABLE IF NOT EXISTS photos(
@@ -26,22 +28,22 @@ CREATE TABLE IF NOT EXISTS photos(
   url VARCHAR(100) NOT NULL,
 );
 
-CREATE TABLE IF NOT EXISTS Fit(
+CREATE TABLE IF NOT EXISTS fit(
   id TINYINT(4) NOT NULL,
   value float,
 );
 
-CREATE TABLE IF NOT EXISTS Length(
+CREATE TABLE IF NOT EXISTS length(
   id TINYINT(4) NOT NULL,
   value float,
 );
 
-CREATE TABLE IF NOT EXISTS Comfort(
+CREATE TABLE IF NOT EXISTS comfort(
   id TINYINT(4) NOT NULL,
   value float,
 );
 
-CREATE TABLE IF NOT EXISTS Quality(
+CREATE TABLE IF NOT EXISTS quality(
   id TINYINT(4) NOT NULL,
   value float,
 );
