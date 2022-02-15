@@ -3,6 +3,11 @@ const fs = require('fs');
 const csv = require('fast-csv');
 const credentials = require('./credentials');
 
+let phototemp = [];
+let count = 0;
+let temp = 0;
+let idTemp = [];
+
 var config = {
   user: credentials.user,
   password: credentials.password,
@@ -20,10 +25,6 @@ pool.connect(function(err) {
   }
 })
 
-let phototemp = [];
-let count = 0;
-let temp = 0;
-let idTemp = [];
 
 var transform = function(array) {
   var transform = [];

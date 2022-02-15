@@ -2,17 +2,7 @@ const pg = require('pg');
 const fs = require('fs');
 const csv = require('fast-csv');
 const format = require('pg-format');
-// const credentials = require('./credentials');
 const config = require('./db.js')
-
-// var config = {
-//   user: credentials.user,
-//   password: credentials.password,
-//   host: credentials.server,
-//   port: 5432,
-//   database: credentials.database,
-//   idleTimeoutMillis: 0,
-// }
 
 const pool = new pg.Pool(config);
 
