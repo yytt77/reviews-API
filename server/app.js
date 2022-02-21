@@ -14,11 +14,16 @@ app.get('/reviews', async function (req, res) {
 
   try {
     const productId = req.query.product_id;
-    console.log('this is ', productId);
+    let sort;
     let page = (req.query.page === undefined) ? 0 : req.query.page;
     let count = (req.query.count === undefined) ? 5 :  req.query.count;
     let totalOffset = page * count;
-    models.reviews.get(productId, page, count, totalOffset, (err, data) => {
+    if (req.query.sort === 'relevant') {
+      sort = 'date DESC, helpfulness';
+    } else {
+      sort = (req.query.sort === 'helpful') ? 'helpfulness' : 'date';
+    }
+    models.reviews.get(productId, page, count, totalOffset, sort, (err, data) => {
       if (err) {
         res.status(404).send(err.message);
       } else {
@@ -54,8 +59,8 @@ app.post('/reviews', async function (req, res) {
   try {
     const product_id = req.body.product_id;
     let rating = req.body.rating;
-    let tzoffset = (new Date()).getTimezoneOffset() * 60000;
-    var date = (new Date(Date.now() - tzoffset)).toISOString();
+    let tzoffset = new Date();
+    var date = tzoffset.getTime();
     let summary = req.body.summary;
     let body = req.body.body;
     let recommend = req.body.recommend;

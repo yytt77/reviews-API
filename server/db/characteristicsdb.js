@@ -70,19 +70,26 @@ let characteristics = csv.parseFile('../csv/characteristic_reviews.csv')
 //     if (!isNaN(id)) {
 //       dataValueTemp.push([id, productId, name]);
 //     }
-//     if (dataValueTemp.length === 3) {
+//     if (dataValueTemp.length === 100) {
 //       characteristics_value.pause();
 //       pool.query(format('INSERT INTO characteristic_value(id, product_id, name) VALUES %L;', dataValueTemp), function(err, data) {
 //         if (err) {
 //           console.log(err)
 //         }
-//         countValue = countValue + 3;
+//         countValue = countValue + 100;
 //         console.log('now 2', countValue);
 //       });
 //       dataValueTemp = [];
 //       characteristics_value.resume();
 //     }
 //   }).on('end', function() {
+//     pool.query(format('INSERT INTO characteristic_value(id, product_id, name) VALUES %L;', dataValueTemp), function(err, data) {
+//       if (err) {
+//         console.log(err)
+//       }
+//       countValue = countValue + 1;
+//       console.log('now 2', countValue);
+//     });
 //     console.log('data insert completed');
 //   }).on('error', function(err) {
 //     console.log(err);

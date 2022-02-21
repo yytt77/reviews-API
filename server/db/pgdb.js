@@ -19,7 +19,8 @@ let csvStream = csv.parseFile('../csv/reviews.csv')
     let id = parseInt(record[0]);
     let product_id = parseInt(record[1]);
     let rating = parseInt(record[2]);
-    let date = (isNaN(parseInt(record[3])) === false) ? new Date(parseInt(record[3])).toISOString() : record[3];
+    // let date = (isNaN(parseInt(record[3])) === false) ? new Date(parseInt(record[3])).toISOString() : record[3];
+    let date = parseInt(record[3]);
     let summary = record[4];
     let body = record[5];
     let recommend = (record[6] === 'TRUE');
@@ -29,11 +30,11 @@ let csvStream = csv.parseFile('../csv/reviews.csv')
     let response = (record[10] === 'null') ? null : record[10];
     let helpfulness = parseInt(record[11]);
     if (!isNaN(id)) {
-      dataTemp.push([product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness]);
+      dataTemp.push([id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness]);
     }
     if (dataTemp.length === 100) {
       csvStream.pause();
-      pool.query(format('INSERT INTO review(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES %L;', dataTemp), function(err, data) {
+      pool.query(format('INSERT INTO review(id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES %L;', dataTemp), function(err, data) {
         if (err) {
           console.log(err)
         }
@@ -46,7 +47,7 @@ let csvStream = csv.parseFile('../csv/reviews.csv')
     }
   }).on('end', function() {
     pool.query(
-      format('INSERT INTO review(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES %L;', dataTemp), function(err, data) {
+      format('INSERT INTO review(id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES %L;', dataTemp), function(err, data) {
         if (err) {
           console.log(err)
         }
