@@ -57,7 +57,7 @@ module.exports = {
         })
       });
     },
-
+    
   },
 
   meta: {
@@ -81,22 +81,18 @@ module.exports = {
           if (ratings[datas[i].rating] === undefined) {
             ratings[datas[i].rating] = 0;
           }
-
           if (recommended[datas[i].recommend] === undefined) {
             recommended[datas[i].recommend] = 0;
           }
           if (characteristic[datas[i].name] === undefined) {
             characteristic[datas[i].name] = {id: datas[i].characteristic_id, value: datas[i].values};
-
           } else {
             characteristic[datas[i].name].value += datas[i].values;
-
           }
             ratings[datas[i].rating] ++;
             recommended[datas[i].recommend] ++;
-
-
         }
+
         let length = datas.length / Object.keys(characteristic).length;
 
         for (let item in characteristic) {
@@ -117,7 +113,6 @@ module.exports = {
         result.recommended = recommended;
         result.characteristics = characteristic;
         callback(null, result);
-
       });
     },
 

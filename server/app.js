@@ -11,7 +11,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 app.get('/reviews', async function (req, res) {
-
   try {
     const productId = req.query.product_id;
     let sort;
@@ -31,14 +30,12 @@ app.get('/reviews', async function (req, res) {
       }
     })
   } catch (err) {
-      res.status(400).send(err.message);
+    res.status(400).send(err.message);
   }
-
 })
 
 
 app.get('/reviews/meta', async function (req, res) {
-
   try {
     const productId = req.query.product_id;
     models.meta.get(productId, (err, data) => {
@@ -51,11 +48,9 @@ app.get('/reviews/meta', async function (req, res) {
   } catch (err) {
     res.status(400).send(err.message);
   }
-
 })
 
 app.post('/reviews', async function (req, res) {
-
   try {
     const product_id = req.body.product_id;
     let rating = req.body.rating;
@@ -72,38 +67,34 @@ app.post('/reviews', async function (req, res) {
     let characteristics = req.body.characteristics;
     let result = [];
     models.reviews.post(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, helpfulness, photos, characteristics,
-      (err, data) => {
-        if (err) {
-          res.status(404).send(err.message);
-        } else {
-          res.sendStatus(201);
-        }
+    (err, data) => {
+      if (err) {
+        res.status(404).send(err.message);
+      } else {
+        res.sendStatus(201);
+      }
     })
   } catch (err) {
     res.status(400).send(err.message);
   }
-
 })
 
 app.put('/reviews/:review_id/helpful', async function (req, res) {
-
   try {
     const reviewId = req.params.review_id;
     models.helpful.put(reviewId, (err, data) => {
-        if (err) {
-          res.status(404).send(err.message);
-        } else {
-          res.sendStatus(201);
-        }
+      if (err) {
+        res.status(404).send(err.message);
+      } else {
+        res.sendStatus(201);
+      }
     })
   } catch (err) {
     res.status(400).send(err.message);
   }
-
 })
 
 app.put('/reviews/:review_id/report', async function (req, res) {
-
   try {
     const reviewId = req.params.review_id;
     models.report.put(reviewId, (err, data) => {
@@ -116,7 +107,6 @@ app.put('/reviews/:review_id/report', async function (req, res) {
   } catch (err) {
     res.status(400).send(err.message);
   }
-
 })
 
 module.exports = app;
