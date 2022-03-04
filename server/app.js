@@ -3,8 +3,7 @@ const  app = express();
 const  cors = require('cors');
 const bodyParser = require('body-parser');
 const models = require('../server/models/index')
-const redis = require("ioredis");
-const client = new redis(6379, '127.0.0.1');
+const client = require('../server/redis/redis.js')
 
 client.on('connect', function() {
   console.log('connect to redis');
@@ -45,13 +44,13 @@ app.get('/reviews', async function (req, res) {
 app.get('/reviews/meta', async function (req, res) {
   try {
     const productId = req.query.product_id;
-    // client.get(productId, (err, data) => {
-    //   if (err) {
-    //     res.status(404).send(err.message);
-    //   };
-    //   if (data !== null) {
-    //     res.json(JSON.parse(data));
-    //   } else {
+    client.get(productId, (err, data) => {
+      if (err) {
+        res.status(404).send(err.message);
+      };
+      if (data !== null) {
+        res.json(JSON.parse(data));
+      } else {
         models.meta.get(productId, (err, data) => {
           if (err) {
             res.status(404).send(err.message);
@@ -60,8 +59,8 @@ app.get('/reviews/meta', async function (req, res) {
             res.json(data);
           }
         })
-    //   }
-    // })
+      }
+    })
   } catch (err) {
     res.status(400).send(err.message);
   }
