@@ -7,16 +7,23 @@ const pool = new pg.Pool(config);
 pool.connect(function(err) {
   if (err) {
     console.log(err);
+  } else {
+    console.log('successful')
   }
 })
 
 module.exports = {
 
   reviews: {
-    get: function (productId, page, count, totalOffset, sort, callback) {
-      console.log('what is the', productId, page, count, totalOffset, sort);
-      pool.query(`SELECT review_id, rating, summary, recommend, response, body, date, reviewer_name, helpfulness, photos From review
-      WHERE product_id = ${productId} ORDER BY ${sort} DESC LIMIT ${count} OFFSET ${totalOffset};`, function(err, data) {
+    get: async function (productId, page, count, totalOffset, sort, callback) {
+      const query = {
+        // give the query a unique name
+        name: 'fetch-review',
+        text: 'SELECT review_id, rating, summary, recommend, response, body, date, reviewer_name, helpfulness, photos From review \
+        WHERE product_id = $1 ORDER BY $2 DESC LIMIT $3 OFFSET $4',
+        values: [productId, sort, count, totalOffset],
+      }
+      await pool.query(query, function(err, data) {
         if (err) {
           callback(err)
         }
@@ -34,19 +41,24 @@ module.exports = {
       });
     },
 
-    post: function (product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, helpfulness, photos, characteristics, callback) {
-      console.log('id.......', product_id, '\n', rating, '\n',date, '\n',summary,'\n', body, '\n',recommend, '\n',reported, '\n',reviewer_name, '\n',reviewer_email, '\n',helpfulness, '\n',photos, '\n',characteristics)
-      pool.query('INSERT INTO review(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, helpfulness, photos) \
-      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING review_id',[product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, helpfulness, photos], function(err, data) {
+    post: async function (product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, helpfulness, photos, characteristics, callback) {
+     // console.log('id.......', product_id, '\n', rating, '\n',date, '\n',summary,'\n', body, '\n',recommend, '\n',reported, '\n',reviewer_name, '\n',reviewer_email, '\n',helpfulness, '\n',photos, '\n',characteristics)
+     const query = {
+      // give the query a unique name
+      name: 'post-review',
+      text: 'INSERT INTO review(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, helpfulness, photos) \
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING review_id',
+      values: [product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, helpfulness, photos],
+      }
+      await pool.query(query, function(err, data) {
         if (err) {
           callback({
             status: '404',
             msg: 'Review Insert Database Fail',
             data: err
           })
-          // console.log('what we need', err)
         }
-        let reviewsId = data.rows[0].id;
+        let reviewsId = data.rows[0].review_id;
         let datas = Object.entries(characteristics);
           for (let i = 0; i < datas.length; i++) {
             datas[i][0] = parseInt(datas[i][0]);
@@ -57,17 +69,24 @@ module.exports = {
         })
       });
     },
-    
+
   },
 
   meta: {
 
-    get: function (productId, callback) {
-      pool.query(`select characteristic.characteristic_id, review.recommend, review.rating, characteristic.id, \
-      characteristic.values, characteristic_value.name
-      from review full outer join characteristic on characteristic.review_id = review.review_id \
-      full outer join characteristic_value on characteristic_value.id = characteristic.characteristic_id \
-      where review.product_id = ${productId} ORDER BY review.review_id ASC;`, function(err, data) {
+    get: async function (productId, callback) {
+
+      const query = {
+        // give the query a unique name
+        name: 'get-review/meta',
+        text: 'select characteristic.characteristic_id, review.recommend, review.rating, characteristic.id, \
+        characteristic.values, characteristic_value.name \
+        from review full outer join characteristic on characteristic.review_id = review.review_id \
+        full outer join characteristic_value on characteristic_value.id = characteristic.characteristic_id \
+        where review.product_id = $1 ORDER BY review.review_id ASC',
+        values: [productId],
+      }
+      await pool.query(query, function(err, data) {
         if (err) {
           callback(err)
         }

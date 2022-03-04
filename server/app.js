@@ -3,12 +3,19 @@ const  app = express();
 const  cors = require('cors');
 const bodyParser = require('body-parser');
 const models = require('../server/models/index')
+const redis = require("ioredis");
+const client = new redis(6379, '127.0.0.1');
 
+client.on('connect', function() {
+  console.log('connect to redis');
+})
+client.on('error', err => {
+    console.log('Error ' + err);
+});
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
 
 app.get('/reviews', async function (req, res) {
   try {
@@ -38,13 +45,23 @@ app.get('/reviews', async function (req, res) {
 app.get('/reviews/meta', async function (req, res) {
   try {
     const productId = req.query.product_id;
-    models.meta.get(productId, (err, data) => {
-      if (err) {
-        res.status(404).send(err.message);
-      } else {
-        res.json(data);
-      }
-    })
+    // client.get(productId, (err, data) => {
+    //   if (err) {
+    //     res.status(404).send(err.message);
+    //   };
+    //   if (data !== null) {
+    //     res.json(JSON.parse(data));
+    //   } else {
+        models.meta.get(productId, (err, data) => {
+          if (err) {
+            res.status(404).send(err.message);
+          } else {
+            client.setex(productId, 3600, JSON.stringify(data));
+            res.json(data);
+          }
+        })
+    //   }
+    // })
   } catch (err) {
     res.status(400).send(err.message);
   }
