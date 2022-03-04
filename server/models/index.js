@@ -8,7 +8,13 @@ pool.connect(function(err) {
   if (err) {
     console.log(err);
   } else {
-    console.log('successful')
+    // console.log('successful')
+    pool.query('select * from review where review_id = 1', (err, data) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log('successful', data)
+    })
   }
 })
 
