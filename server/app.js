@@ -4,6 +4,7 @@ const  cors = require('cors');
 const bodyParser = require('body-parser');
 const models = require('../server/models/index')
 const client = require('../server/redis/redis.js')
+const loader = require('./loaderio-44307f0a71130520529d97c318199a0a.txt')
 
 client.on('connect', function() {
   console.log('connect to redis');
@@ -15,6 +16,10 @@ client.on('error', err => {
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.get('/loaderio-44307f0a71130520529d97c318199a0a/', (req, res) => {
+  res.send(loader);
+})
 
 app.get('/reviews', async function (req, res) {
   try {
