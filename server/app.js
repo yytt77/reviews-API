@@ -33,11 +33,21 @@ app.get('/reviews', async function (req, res) {
     } else {
       sort = (req.query.sort === 'helpful') ? 'helpfulness' : 'date';
     }
-    models.reviews.get(productId, page, count, totalOffset, sort, (err, data) => {
+    client.get(productId, (err, data) => {
       if (err) {
         res.status(404).send(err.message);
+      };
+      if (data !== null) {
+        res.json(JSON.parse(data));
       } else {
-        res.json(data);
+        models.reviews.get(productId, page, count, totalOffset, sort, (err, data) => {
+          if (err) {
+            res.status(404).send(err.message);
+          } else {
+            client.setex(productId, 3600, JSON.stringify(data));
+            res.json(data);
+          }
+        })
       }
     })
   } catch (err) {
@@ -49,7 +59,8 @@ app.get('/reviews', async function (req, res) {
 app.get('/reviews/meta', async function (req, res) {
   try {
     const productId = req.query.product_id;
-    client.get(productId, (err, data) => {
+    const meta = productId + 'meta';
+    client.get(meta, (err, data) => {
       if (err) {
         res.status(404).send(err.message);
       };
@@ -60,7 +71,7 @@ app.get('/reviews/meta', async function (req, res) {
           if (err) {
             res.status(404).send(err.message);
           } else {
-            client.setex(productId, 3600, JSON.stringify(data));
+            client.setex(meta, 3600, JSON.stringify(data));
             res.json(data);
           }
         })
